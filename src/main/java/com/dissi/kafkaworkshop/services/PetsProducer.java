@@ -4,7 +4,6 @@ import com.dissi.kafkaworkshop.api.PetsApiDelegate;
 import com.dissi.kafkaworkshop.model.Pet;
 import com.dissi.kafkaworkshop.storage.PetStorage;
 import com.github.javafaker.Faker;
-import java.util.Collections;
 import java.util.List;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PetsProducer implements PetsApiDelegate {
 
+  private static final Integer DEFAULT_LIMIT = 10;
+  private static final Integer MAXIMUM_LIMIT = 100;
   private final Faker FAKER = new Faker();
 
   private final KafkaTemplate<Long, Pet> petKafkaTemplate;
@@ -38,13 +39,18 @@ public class PetsProducer implements PetsApiDelegate {
   }
 
   @Override
-  public ResponseEntity<List<Pet>> showPetById(String petId) {
+  public ResponseEntity<Pet> showPetById(String petId) {
     try {
       Long id = Long.parseLong(petId);
       log.info("Getting pet with ID " + id);
-      return new ResponseEntity<>(Collections.singletonList(petStore.getPet(id)), HttpStatus.OK);
+      return new ResponseEntity<>(petStore.getPet(id), HttpStatus.OK);
     } catch (NumberFormatException e) {
       return PetsApiDelegate.super.showPetById(petId);
     }
+  }
+
+  @Override
+  public ResponseEntity<List<Pet>> listPets(Integer limit) {
+    return new ResponseEntity<>(petStore.getAsList(limit), HttpStatus.OK);
   }
 }

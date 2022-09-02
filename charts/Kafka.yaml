@@ -85,7 +85,7 @@ spec:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                    - key: node-rule.runner
+                    - key: kubectl.kubernetes.io/default-container
                       operator: In
                       values:
                         - kafka

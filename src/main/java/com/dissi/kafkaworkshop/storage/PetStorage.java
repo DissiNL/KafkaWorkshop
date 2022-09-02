@@ -2,6 +2,7 @@ package com.dissi.kafkaworkshop.storage;
 
 import com.dissi.kafkaworkshop.model.Pet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
@@ -18,4 +19,7 @@ public class PetStorage {
     map.put(pet.getId(), pet);
   }
 
+  public List<Pet> getAsList(int limit) {
+    return map.values().stream().limit(limit).toList();
+  }
 }

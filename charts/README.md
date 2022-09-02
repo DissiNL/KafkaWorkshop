@@ -8,6 +8,8 @@ helm install kafka-operator strimzi/strimzi-kafka-operator --namespace kafka --v
 kubectl create namespace petshop
 kubectl apply -f KafkaAdmin.yaml --namespace petshop
 kubectl apply -f Kafka.yaml --namespace petshop
+kubectl delete namespace petshop
+
 
 https://strimzi.io/blog/2019/04/23/accessing-kafka-part-2/
 
