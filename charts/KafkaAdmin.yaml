@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafka-admin-secret
+  namespace: petshop
+type: Opaque
+data:
+  # "test"
+  password: dGVzdA==
