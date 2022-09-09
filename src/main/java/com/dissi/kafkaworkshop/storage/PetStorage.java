@@ -22,4 +22,8 @@ public class PetStorage {
   public List<Pet> getAsList(int limit) {
     return map.values().stream().limit(limit).toList();
   }
+
+  public List<Pet> getAsList() {
+    return map.values().stream().toList();
+  }
 }

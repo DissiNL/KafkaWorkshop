@@ -51,6 +51,7 @@ public class PetsProducer implements PetsApiDelegate {
 
   @Override
   public ResponseEntity<List<Pet>> listPets(Integer limit) {
+    log.info("Sending data to user with limit of '" + limit + "'");
     return new ResponseEntity<>(petStore.getAsList(limit), HttpStatus.OK);
   }
 }
