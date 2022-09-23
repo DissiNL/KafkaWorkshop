@@ -1,8 +1,7 @@
 package com.dissi.kafkaworkshop.kafka;
 
-import static com.dissi.kafkaworkshop.config.WebSocketConfig.MESSAGE_PREFIX;
-
 import com.dissi.kafkaworkshop.model.Pet;
+import com.dissi.kafkaworkshop.services.PetShopWebSocket;
 import com.dissi.kafkaworkshop.storage.PetStorage;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,9 @@ import lombok.extern.java.Log;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.listener.AbstractConsumerSeekAware;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class PetListener extends AbstractConsumerSeekAware {
 
   private final PetStorage petStore;
-  private final SimpMessagingTemplate brokerMessagingTemplate;
+  private final PetShopWebSocket webSocket;
 
   @Override
   public void onPartitionsAssigned(Map<TopicPartition, Long> assignments, ConsumerSeekCallback callback) {
@@ -29,16 +30,12 @@ public class PetListener extends AbstractConsumerSeekAware {
 
   @KafkaListener(
     topics = "pets",
-    groupId = "admin-pets-group",
     containerFactory = KafkaConsumerConfig.CONSUMER_NAME
   )
-  public void consumePet(Pet incoming) {
+  public void consumePet(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) Long key, @Payload(required = false) Pet incoming) {
     log.info("Adding pet: " + incoming);
-    petStore.storePet(incoming);
-    send(incoming);
+    petStore.storePet(key, incoming);
+    webSocket.broadcastUpdate(key, incoming);
   }
 
-  public void send(Pet petData) {
-    brokerMessagingTemplate.convertAndSend(MESSAGE_PREFIX + "/shop/pet", petData);
-  }
 }

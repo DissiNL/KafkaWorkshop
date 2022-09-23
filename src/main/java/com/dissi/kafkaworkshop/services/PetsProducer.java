@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PetsProducer implements PetsApiDelegate {
 
-  private static final Integer DEFAULT_LIMIT = 10;
-  private static final Integer MAXIMUM_LIMIT = 100;
-  private final Faker FAKER = new Faker();
+  private static final Faker FAKER = new Faker();
 
   private final KafkaTemplate<Long, Pet> petKafkaTemplate;
   private final PetStorage petStore;
@@ -39,14 +37,9 @@ public class PetsProducer implements PetsApiDelegate {
   }
 
   @Override
-  public ResponseEntity<Pet> showPetById(String petId) {
-    try {
-      Long id = Long.parseLong(petId);
-      log.info("Getting pet with ID " + id);
-      return new ResponseEntity<>(petStore.getPet(id), HttpStatus.OK);
-    } catch (NumberFormatException e) {
-      return PetsApiDelegate.super.showPetById(petId);
-    }
+  public ResponseEntity<Pet> showPetById(Long petId) {
+    log.info("Getting pet with ID " + petId);
+    return new ResponseEntity<>(petStore.getPet(petId), HttpStatus.OK);
   }
 
   @Override

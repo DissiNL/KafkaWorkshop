@@ -94,7 +94,6 @@
             <artifactId>spring-boot-starter-validation</artifactId>
             <groupId>org.springframework.boot</groupId>
         </dependency>
-
         <dependency>
             <artifactId>spring-native</artifactId>
             <groupId>org.springframework.experimental</groupId>
@@ -103,6 +102,11 @@
         <dependency>
             <artifactId>spring-kafka</artifactId>
             <groupId>org.springframework.kafka</groupId>
+        </dependency>
+        <dependency>
+            <groupId>io.kubernetes</groupId>
+            <artifactId>client-java</artifactId>
+            <version>15.0.1</version>
         </dependency>
         <dependency>
             <artifactId>jackson-databind-nullable</artifactId>

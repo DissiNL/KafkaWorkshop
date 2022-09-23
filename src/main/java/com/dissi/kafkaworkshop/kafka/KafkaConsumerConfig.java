@@ -16,6 +16,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 @Configuration
 public class KafkaConsumerConfig {
 
+  public static final String KAFKA_TOPIC_NAME = "pets";
   public static final String CONSUMER_NAME = "petKafkaListenerContainerFactory";
   private final AuthorizationConfiguration authorizationConfig;
 

@@ -15,8 +15,12 @@ public class PetStorage {
     return map.get(key);
   }
 
-  public void storePet(Pet pet) {
-    map.put(pet.getId(), pet);
+  public void storePet(Long key, Pet pet) {
+    if (pet != null) {
+      map.put(key, pet);
+    } else {
+      map.remove(key);
+    }
   }
 
   public List<Pet> getAsList(int limit) {
