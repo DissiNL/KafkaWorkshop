@@ -12,7 +12,7 @@ public class AuthorizationConfiguration {
   @Value("${kafka.petshop.username:admin}")
   private String petsTopicUsername;
 
-  @Value("${kafka.petshopt.password:test}")
+  @Value("${kafka.petshop.password:test}")
   private String petsTopicPassword;
 
   public void addAuthorizationToMap(Map<String, Object> props) {

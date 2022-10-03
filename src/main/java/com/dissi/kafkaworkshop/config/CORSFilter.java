@@ -15,7 +15,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CORSFilter implements Filter {
 
-  private final List<String> allowedOrigins = Arrays.asList("http://localhost:3000", "http://localhost");
+  private final List<String> allowedOrigins = Arrays.asList("http://localhost:3000", "http://localhost",
+    "https://kafkaworkshop.cluster.dissi.me");
 
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
     throws IOException, ServletException {

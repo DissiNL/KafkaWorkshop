@@ -26,3 +26,5 @@ sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule require
 ./bin/kafka-console-consumer.sh --topic pets --bootstrap-server kafka.cluster.dissi.me:32100 --from-beginning --consumer.config config.properties --group admin-pets-group
 
 kubectl delete namespace petshop
+
+helm install petservice --namespace petshop .

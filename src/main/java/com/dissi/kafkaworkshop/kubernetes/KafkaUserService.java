@@ -25,6 +25,9 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -32,6 +35,7 @@ import org.springframework.util.FileCopyUtils;
 @Log
 @Service
 @RequiredArgsConstructor
+@DependsOn("KubeConfigService")
 public class KafkaUserService {
 
   static {
@@ -51,11 +55,27 @@ public class KafkaUserService {
   private String template;
 
   @PostConstruct
-  public void loadData() {
+  public void loadData() throws ApiException {
     log.info("Start loading template for kafka users.");
     template = asString(kafkaUserTemplate);
     log.info("Completed loading template for kafka users.");
     log.config(template);
+
+    try {
+      this.kubeService.getCoreApi()
+        .listNamespacedSecret(this.kubeService.getNamespace(), null, null, null, null, null, null, null, null, null,
+          null);
+    } catch (ApiException ex) {
+      log.severe("Got kube api service: " + kubeService.getCoreApi().getApiClient().getBasePath());
+      log.severe(String.format("""
+        Can not create user service due to being unable to contact the API.
+        message: %s
+        code: %s
+        reason %s
+        """, ex.getMessage(), ex.getCode(), ex.getResponseBody()));
+
+      throw new RuntimeException("Can not boot the service.");
+    }
   }
 
   public static String asString(Resource resource) {
@@ -66,6 +86,7 @@ public class KafkaUserService {
     }
   }
 
+  @CacheEvict(value = "kafka-users", key = "#id")
   public KafkaUser createUser(Long id, String ipAddress) {
     long userId = id;
     KafkaUser kafkaUser = KafkaUser.fromId(userId);
@@ -93,8 +114,6 @@ public class KafkaUserService {
       customObjectsApi.createNamespacedCustomObject("kafka.strimzi.io", "v1beta2", kubeService.getNamespace(),
         "kafkausers",
         templatedUser, "true", null, null);
-
-
     } catch (IOException e) {
       log.severe("Can not load template " + e.getMessage());
     } catch (ApiException e) {
@@ -102,6 +121,7 @@ public class KafkaUserService {
     }
   }
 
+  @Cacheable(value = "kafka-users", key = "#id", unless = "#result == null")
   public User getUser(Long id) {
     String secretData = SECRET_NAME_PREFIX + id;
     log.info("Loading secret [" + secretData + "]");
@@ -114,11 +134,16 @@ public class KafkaUserService {
       return null;
     }
 
-    return new User()
-      .id(id)
-      .username(KAFKA_USER_PREFIX + id)
-      .password(new String(Objects.requireNonNull(v1Secret.getData()).get("password"), UTF_8))
-      .jaasConfig(new String(v1Secret.getData().get("sasl.jaas.config"), UTF_8));
+    try {
+      return new User()
+        .id(id)
+        .username(KAFKA_USER_PREFIX + id)
+        .password(new String(Objects.requireNonNull(v1Secret.getData()).get("password"), UTF_8))
+        .jaasConfig(new String(v1Secret.getData().get("sasl.jaas.config"), UTF_8));
+    } catch (RuntimeException e) {
+      // v1Secret not complete yet.
+      return null;
+    }
 
   }
 }
