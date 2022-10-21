@@ -41,6 +41,7 @@ service:
   port: 8080
 
 env:
+  SPRING_PROFILES_ACTIVE: "consumer,producer"
   'kafka.petshop.username': admin
   'kafka.petshop.password':
     valueFrom:
@@ -59,17 +60,10 @@ ingress:
         - path: /
           pathType: Prefix
 
-resources: { }
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-#   cpu: 100m
-#   memory: 128Mi
+resources:
+  requests:
+    cpu: 2
+    memory: 512Mi
 
 autoscaling:
   enabled: false
@@ -79,7 +73,6 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: { }
-
 
 tolerations: [ ]
 

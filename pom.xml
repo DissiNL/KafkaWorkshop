@@ -2,15 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-    <groupId>com.dissi</groupId>
     <artifactId>kafka-workshop</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
@@ -19,7 +11,6 @@
                     <container>
                         <mainClass>com.dissi.kafkaworkshop.KafkaWorkshopApplication</mainClass>
                     </container>
-
                     <from>
                         <image>gcr.io/distroless/java17@sha256:976e6000cd3d7b14745964944ffe366a41cd2c192696a78490fc88ef77302d90</image>
                     </from>
@@ -28,7 +19,7 @@
                     </to>
                 </configuration>
                 <groupId>com.google.cloud.tools</groupId>
-                <version>2.5.0</version>
+                <version>3.3.0</version>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -128,7 +119,7 @@
         <dependency>
             <artifactId>client-java</artifactId>
             <groupId>io.kubernetes</groupId>
-            <version>15.0.1</version>
+            <version>16.0.0</version>
         </dependency>
         <dependency>
             <artifactId>jackson-databind-nullable</artifactId>
@@ -159,19 +150,33 @@
             <artifactId>javafaker</artifactId>
             <groupId>com.github.javafaker</groupId>
             <version>0.15</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
     </dependencies>
     <description>KafkaWorkshop</description>
+    <groupId>com.dissi</groupId>
     <name>Kafka Workshop</name>
-
     <packaging>jar</packaging>
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <relativePath/>
+        <version>2.7.4</version> <!-- lookup parent from repository -->
+    </parent>
 
     <properties>
+        <snakeyaml.version>1.30</snakeyaml.version>
         <java.version>17</java.version>
         <repackage.classifier/>
         <spring-native.version>0.12.1</spring-native.version>
     </properties>
+
+    <version>0.0.1-SNAPSHOT</version>
     <repositories>
         <repository>
             <id>spring-releases</id>

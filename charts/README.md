@@ -28,3 +28,4 @@ sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule require
 kubectl delete namespace petshop
 
 helm install petservice --namespace petshop .
+helm upgrade petservice --namespace petshop .

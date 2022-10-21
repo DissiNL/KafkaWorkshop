@@ -28,6 +28,6 @@ public class PetStorage {
   }
 
   public List<Pet> getAsList() {
-    return map.values().stream().toList();
+    return List.copyOf(map.values().stream().toList());
   }
 }

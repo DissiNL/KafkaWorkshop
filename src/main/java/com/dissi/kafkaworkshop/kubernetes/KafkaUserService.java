@@ -103,13 +103,19 @@ public class KafkaUserService {
         .replace(TEMPLATE_KAFKA_GROUP, kafkaUser.groupId()));
       CoreV1Api api = new CoreV1Api();
 
-      api.createNamespacedSecret(kubeService.getNamespace(), new V1Secret()
-          .metadata(new V1ObjectMeta()
-            .labels(Collections.singletonMap("workshop/ipaddress", ipAddress))
-            .name(kafkaUser.password()))
-          .type("Opaque")
-          .putDataItem("password", FAKER.internet().password(6, 16, true, false).getBytes(UTF_8)),
-        null, null, null, null);
+      try {
+        api.createNamespacedSecret(kubeService.getNamespace(), new V1Secret()
+            .metadata(new V1ObjectMeta()
+              .labels(Collections.singletonMap("workshop/ipaddress", ipAddress))
+              .name(kafkaUser.password()))
+            .type("Opaque")
+            .putDataItem("password", FAKER.internet().password(6, 16, true, false).getBytes(UTF_8)),
+          null, null, null, null);
+      } catch (ApiException e) {
+        log.severe(e.getResponseBody());
+        api.readNamespacedSecret(kafkaUser.password(), this.kubeService.getNamespace(), null);
+
+      }
       CustomObjectsApi customObjectsApi = new CustomObjectsApi();
       customObjectsApi.createNamespacedCustomObject("kafka.strimzi.io", "v1beta2", kubeService.getNamespace(),
         "kafkausers",
@@ -117,6 +123,8 @@ public class KafkaUserService {
     } catch (IOException e) {
       log.severe("Can not load template " + e.getMessage());
     } catch (ApiException e) {
+      log.severe(e.toString());
+      log.severe(e.getResponseBody());
       log.severe("Can not create kafka user " + e.getMessage());
     }
   }

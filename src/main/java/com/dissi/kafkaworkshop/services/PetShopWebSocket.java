@@ -22,9 +22,9 @@ public class PetShopWebSocket {
 
   @MessageMapping("/shop")
   @SendTo("/topic/shop")
-  public List<Pet> listPetsWithLimit(Integer limit) {
-    log.info("Sending data to user with limit of '" + limit + "'");
-    return petStore.getAsList(limit);
+  public List<Pet> listPetsWithLimit() {
+    log.info("Sending data to user with no limit");
+    return petStore.getAsList();
   }
 
   public void broadcastUpdate(Long key, Pet incoming) {
