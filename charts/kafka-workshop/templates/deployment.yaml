@@ -40,14 +40,17 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: http-metrics
+              containerPort: 9001
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: http
+              port: http-metrics
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: http
+              port: http-metrics
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

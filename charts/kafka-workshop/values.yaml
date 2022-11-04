@@ -39,6 +39,7 @@ securityContext: { }
 service:
   type: ClusterIP
   port: 8080
+  metricsPort: 9001
 
 env:
   SPRING_PROFILES_ACTIVE: "consumer,producer"
@@ -60,10 +61,8 @@ ingress:
         - path: /
           pathType: Prefix
 
-resources:
-  requests:
-    cpu: 2
-    memory: 512Mi
+resources: { }
+
 
 autoscaling:
   enabled: false

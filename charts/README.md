@@ -3,7 +3,7 @@ https://strimzi.io/docs/operators/0.22.1/full/using.html#proc-config-kafka-str
 
 helm repo add strimzi https://strimzi.io/charts/
 kubectl create namespace kafka
-helm install kafka-operator strimzi/strimzi-kafka-operator --namespace kafka --version 0.30.0 --set watchAnyNamespace=enabled
+helm upgrade --install kafka-operator strimzi/strimzi-kafka-operator --namespace kafka --version 0.31.1 --set watchAnyNamespace=enabled --set metrics.serviceMonitor.enabled=true --set metrics.serviceMonitor.namespace=kafka
 
 kubectl create namespace petshop
 kubectl apply -f KafkaAdmin.yaml --namespace petshop

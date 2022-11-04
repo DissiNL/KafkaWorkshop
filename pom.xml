@@ -10,6 +10,10 @@
                 <configuration>
                     <container>
                         <mainClass>com.dissi.kafkaworkshop.KafkaWorkshopApplication</mainClass>
+                        <ports>
+                            <port>8080</port>
+                            <port>9001</port>
+                        </ports>
                     </container>
                     <from>
                         <image>gcr.io/distroless/java17@sha256:976e6000cd3d7b14745964944ffe366a41cd2c192696a78490fc88ef77302d90</image>
@@ -85,6 +89,15 @@
     <dependencies>
         <dependency>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>org.springframework.boot</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <groupId>io.micrometer</groupId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <artifactId>spring-boot-starter-aop</artifactId>
             <groupId>org.springframework.boot</groupId>
         </dependency>
         <dependency>
@@ -197,48 +210,4 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
-    <profiles>
-        <profile>
-            <id>native</id>
-            <properties>
-                <repackage.classifier>exec</repackage.classifier>
-                <native-buildtools.version>0.9.13</native-buildtools.version>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.junit.platform</groupId>
-                    <artifactId>junit-platform-launcher</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <version>${native-buildtools.version}</version>
-                        <extensions>true</extensions>
-                        <executions>
-                            <execution>
-                                <id>test-native</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>build-native</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
 </project>

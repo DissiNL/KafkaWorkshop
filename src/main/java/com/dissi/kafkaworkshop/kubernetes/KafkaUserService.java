@@ -15,6 +15,7 @@ import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1Secret;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
+import io.micrometer.core.annotation.Timed;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -86,6 +87,7 @@ public class KafkaUserService {
     }
   }
 
+  @Timed(value = "petshop.create.user", description = "Time taken to create a user")
   @CacheEvict(value = "kafka-users", key = "#id")
   public KafkaUser createUser(Long id, String ipAddress) {
     long userId = id;
