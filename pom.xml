@@ -126,10 +126,6 @@
             <groupId>org.springframework.kafka</groupId>
         </dependency>
         <dependency>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-            <groupId>org.springframework.boot</groupId>
-        </dependency>
-        <dependency>
             <artifactId>client-java</artifactId>
             <groupId>io.kubernetes</groupId>
             <version>16.0.0</version>

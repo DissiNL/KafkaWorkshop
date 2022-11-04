@@ -54,7 +54,6 @@ public class PetsProducer implements PetsApiDelegate {
       );
   }
 
-
   @Override
   public ResponseEntity<Void> createPets() {
     long petId = FAKER.number().randomNumber();

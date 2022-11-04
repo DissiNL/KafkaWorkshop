@@ -1,6 +1,7 @@
 package com.dissi.kafkaworkshop.kafka;
 
 import com.dissi.kafkaworkshop.model.Pet;
+import com.dissi.kafkaworkshop.services.DeserializerHandler;
 import com.dissi.kafkaworkshop.services.PetShopWebSocket;
 import com.dissi.kafkaworkshop.storage.PetStorage;
 import java.util.Map;
@@ -35,8 +36,16 @@ public class PetListener extends AbstractConsumerSeekAware {
     containerFactory = KafkaConsumerConfig.CONSUMER_NAME
   )
   public void consumePet(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) Long key, @Payload(required = false) Pet incoming) {
+    if (DeserializerHandler.KEY_FAILURE.equals(key)) {
+      return;
+    }
+
+    if (DeserializerHandler.VALUE_FAILURE.equals(incoming)) {
+      log.info(String.format("Got failure for key %s", key));
+      return;
+    }
+
     petStore.storePet(key, incoming);
     webSocket.broadcastUpdate(key, incoming);
   }
-
 }

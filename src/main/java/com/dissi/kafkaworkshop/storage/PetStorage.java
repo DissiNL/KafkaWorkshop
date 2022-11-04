@@ -4,10 +4,14 @@ import com.dissi.kafkaworkshop.model.Pet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PetStorage {
+
+  private static final Random R = new Random();
 
   private final Map<Long, Pet> map = new HashMap<>();
 
@@ -29,5 +33,9 @@ public class PetStorage {
 
   public List<Pet> getAsList() {
     return List.copyOf(map.values().stream().toList());
+  }
+
+  public Optional<Pet> getFirstPet() {
+    return map.values().stream().skip(R.nextInt(map.values().size() + 1)).findFirst();
   }
 }

@@ -42,7 +42,7 @@ service:
   metricsPort: 9001
 
 env:
-  SPRING_PROFILES_ACTIVE: "consumer,producer"
+  SPRING_PROFILES_ACTIVE: "consumer,producer,poison"
   'kafka.petshop.username': admin
   'kafka.petshop.password':
     valueFrom:
