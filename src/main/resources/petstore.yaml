@@ -157,10 +157,13 @@ components:
           format: date-time
         name:
           type: string
+          maxLength: 50
         type:
           type: string
+          maxLength: 50
         owner:
           type: string
+          maxLength: 50
     Pets:
       type: array
       items:
