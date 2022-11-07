@@ -3,7 +3,6 @@ package com.dissi.kafkaworkshop.services;
 import com.dissi.kafkaworkshop.storage.PetStorage;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Profile("poison")
 @Log
 @Controller
 @RequestMapping("${openapi.swaggerPetstore.base-path:/v1}")

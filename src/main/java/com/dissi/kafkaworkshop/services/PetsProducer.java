@@ -7,7 +7,6 @@ import com.github.javafaker.Faker;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -15,7 +14,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Profile("producer")
@@ -40,12 +38,6 @@ public class PetsProducer implements PetsApiDelegate {
     this.types = new RandomLineGenerator(new ClassPathResource("types.txt"));
   }
 
-  @Scheduled(fixedDelay = 300)
-  public void doCreate() {
-    createPets();
-  }
-
-  @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.MINUTES)
   public void doDeleteOld() {
     OffsetDateTime hourAgo = OffsetDateTime.now().minus(1, ChronoUnit.MINUTES);
     petStore.getAsList().stream()
