@@ -52,15 +52,21 @@ public class KafkaUserService {
   private final KubeConfigService kubeService;
 
   @Value("classpath:DefaultKafkaUser.yaml")
-  private Resource kafkaUserTemplate;
-  private String template;
+  private Resource kafkaReadTemplate;
+  @Value("classpath:DefaultKafkaUserWriter.yaml")
+  private Resource kafkaWriteTemplate;
+
+  private String readTemplate;
+  private String writeTemplate;
 
   @PostConstruct
-  public void loadData() throws ApiException {
+  public void loadData() {
     log.info("Start loading template for kafka users.");
-    template = asString(kafkaUserTemplate);
+    readTemplate = asString(kafkaReadTemplate);
+    writeTemplate = asString(kafkaWriteTemplate);
     log.info("Completed loading template for kafka users.");
-    log.config(template);
+    log.config(readTemplate);
+    log.config(writeTemplate);
 
     try {
       this.kubeService.getCoreApi()
@@ -99,20 +105,28 @@ public class KafkaUserService {
   private void createUser(KafkaUser kafkaUser, String ipAddress) {
     // Load Yaml into Kubernetes resources
     try {
-      V1beta2KafkaUser templatedUser = (V1beta2KafkaUser) Yaml.load(template
-        .replace(TEMPLATE_KAFKA_USERNAME, kafkaUser.username())
-        .replace(TEMPLATE_KAFKA_PASSWORD, kafkaUser.password())
-        .replace(TEMPLATE_KAFKA_GROUP, kafkaUser.groupId()));
+      V1beta2KafkaUser readUserTemplate = getTempaltedUser(readTemplate, kafkaUser);
+      V1beta2KafkaUser writeUserTemplate = getTempaltedUser(writeTemplate, kafkaUser);
       CoreV1Api api = new CoreV1Api();
 
       try {
+        String password = FAKER.internet().password(6, 16, true, false);
         api.createNamespacedSecret(kubeService.getNamespace(), new V1Secret()
             .metadata(new V1ObjectMeta()
               .labels(Collections.singletonMap("workshop/ipaddress", ipAddress))
-              .name(kafkaUser.password()))
+              .name(kafkaUser.username()))
             .type("Opaque")
-            .putDataItem("password", FAKER.internet().password(6, 16, true, false).getBytes(UTF_8)),
+            .putDataItem("password", password.getBytes(UTF_8)),
           null, null, null, null);
+        api.createNamespacedSecret(kubeService.getNamespace(), new V1Secret()
+            .metadata(new V1ObjectMeta()
+              .labels(Collections.singletonMap("workshop/ipaddress", ipAddress))
+              .name(kafkaUser.username() + "-writer"))
+            .type("Opaque")
+            .putDataItem("password", password.getBytes(UTF_8)),
+          null, null, null, null);
+
+
       } catch (ApiException e) {
         log.severe(e.getResponseBody());
         api.readNamespacedSecret(kafkaUser.password(), this.kubeService.getNamespace(), null);
@@ -121,7 +135,11 @@ public class KafkaUserService {
       CustomObjectsApi customObjectsApi = new CustomObjectsApi();
       customObjectsApi.createNamespacedCustomObject("kafka.strimzi.io", "v1beta2", kubeService.getNamespace(),
         "kafkausers",
-        templatedUser, "true", null, null);
+        readUserTemplate, "true", null, null);
+      customObjectsApi.createNamespacedCustomObject("kafka.strimzi.io", "v1beta2", kubeService.getNamespace(),
+        "kafkausers",
+        writeUserTemplate, "true", null, null);
+
     } catch (IOException e) {
       log.severe("Can not load template " + e.getMessage());
     } catch (ApiException e) {
@@ -129,6 +147,13 @@ public class KafkaUserService {
       log.severe(e.getResponseBody());
       log.severe("Can not create kafka user " + e.getMessage());
     }
+  }
+
+  private V1beta2KafkaUser getTempaltedUser(String readTemplate, KafkaUser kafkaUser) throws IOException {
+    return (V1beta2KafkaUser) Yaml.load(readTemplate
+      .replace(TEMPLATE_KAFKA_USERNAME, kafkaUser.username())
+      .replace(TEMPLATE_KAFKA_PASSWORD, kafkaUser.password())
+      .replace(TEMPLATE_KAFKA_GROUP, kafkaUser.groupId()));
   }
 
   @Cacheable(value = "kafka-users", key = "#id", unless = "#result == null")

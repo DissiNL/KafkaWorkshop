@@ -31,7 +31,7 @@ public class ScheduledPetsProducer {
     this.executor = new ThreadPoolTaskScheduler();
     executor.setPoolSize(1);
     executor.initialize();
-    scheduleTask(1000);
+    scheduleTask(20000);
   }
 
   private void scheduleTask(int delay) {

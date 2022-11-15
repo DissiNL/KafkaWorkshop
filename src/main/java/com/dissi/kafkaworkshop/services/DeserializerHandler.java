@@ -17,7 +17,8 @@ public class DeserializerHandler {
       return null;
     }
 
-    log.info(String.format("Got weird message [%s]",
+    log.info(String.format("Got weird message [%s]. [%s]",
+      failedDeserializationInfo.getException().getMessage(),
       new String(failedDeserializationInfo.getData(), StandardCharsets.UTF_8)));
     return VALUE_FAILURE;
   }

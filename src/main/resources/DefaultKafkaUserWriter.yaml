@@ -1,0 +1,49 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: %kafka_username%-write
+  namespace: petshop
+  labels:
+    strimzi.io/cluster: petshop
+spec:
+  authentication:
+    type: SCRAM_SHA_512
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: %kafka_password_key%
+          key: password
+  authorization:
+    type: simple
+    acls:
+      # Example consumer Acls for topic my-topic using consumer group my-group
+      - resource:
+          type: topic
+          name: pets
+          patternType: literal
+        operation: Write
+        host: "*"
+      - resource:
+          type: topic
+          name: pets
+          patternType: literal
+        operation: Read
+        host: "*"
+      - resource:
+          type: topic
+          name: pets
+          patternType: literal
+        operation: Describe
+        host: "*"
+      - resource:
+          type: group
+          name: "%kafka_group%"
+          patternType: literal
+        operation: Read
+        host: "*"
+      - resource:
+          type: group
+          name: "%kafka_group%"
+          patternType: literal
+        operation: Write
+        host: "*"
